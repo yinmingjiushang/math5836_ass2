@@ -215,8 +215,40 @@ def linear_comp2(csv_path,name):
     plt.savefig(f"../out/model_comp/{name}.png")
     plt.close()
 
+def logistic_auc_comp(csv_path, output_dir):
+    # Load the dataset
+    experiment_results = pd.read_csv(csv_path)
 
-def logistic_comp(csv_path, output_dir):
+    # Create output directory if it doesn't exist
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Plotting AUC comparison for all experiments
+    plt.figure(figsize=(12, 8))
+
+    for feature_type in experiment_results['feature_type'].unique():
+        feature_data = experiment_results[experiment_results['feature_type'] == feature_type]
+        for norm_flag in feature_data['norm_flag'].unique():
+            norm_data = feature_data[feature_data['norm_flag'] == norm_flag]
+            plt.plot(norm_data['experiment_num'], norm_data['auc_score'], marker='o', linestyle='-', alpha=0.7,
+                     label=f'Feature: {feature_type}, Norm: {norm_flag}')
+
+    # Plot settings
+    plt.xlabel('Experiment Number')
+    plt.ylabel('AUC Score')
+    plt.title('AUC Score Comparison for All Experiments')
+    plt.legend(loc="lower right")
+    plt.tight_layout()
+    plt.grid(True)
+
+    # Save the plot as PNG
+    plot_path = os.path.join(output_dir, 'auc_score_comparison.png')
+    plt.savefig(plot_path)
+    plt.close()
+
+    # Print statement to confirm saving
+    print(f"AUC score comparison plot saved to {plot_path}")
+
+def logistic_roc_comp(csv_path, output_dir):
     # Load the dataset
     experiment_results = pd.read_csv(csv_path)
 
@@ -306,11 +338,10 @@ def neural_comp(csv_path, name):
 
 
 linear_vs_neural()
-# linear_comp(30)
 
-
-# linear_comp2("../results/linear_experiment_results.csv", "linear_comp")
-# neural_comp("../results/fun1_experiment_results.csv", "fun1")
-# neural_comp("../results/fun2_experiment_results.csv", "fun2")
-# neural_comp("../results/fun3_experiment_results.csv", "fun3")
-logistic_comp("../results/logistic_experiment_results.csv", "../out/model_comp/")
+linear_comp2("../results/linear_experiment_results.csv", "linear_comp")
+neural_comp("../results/fun1_experiment_results.csv", "fun1")
+neural_comp("../results/fun2_experiment_results.csv", "fun2")
+neural_comp("../results/fun3_experiment_results.csv", "fun3")
+logistic_auc_comp("../results/logistic_experiment_results.csv", "../out/model_comp")
+logistic_roc_comp("../results/logistic_experiment_results.csv", "../out/model_comp/")
