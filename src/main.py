@@ -83,13 +83,19 @@ def heatmap(df):
 def corr_with_rings(df):
     # 计算相关矩阵
     corr_matrix = df.corr()
-    # 对 Rings 的相关性进行排序，以确定最正和最负的相关性
-    correlation_with_rings = corr_matrix['Rings'].drop('Rings').sort_values()
-    # 相关性最负的特征
-    neg_corr_feature = correlation_with_rings.idxmin()
-    # 相关性最正的特征
-    pos_corr_feature = correlation_with_rings.idxmax()
-    return neg_corr_feature,pos_corr_feature
+    # # 对 Rings 的相关性进行排序，以确定最正和最负的相关性
+    # correlation_with_rings = corr_matrix['Rings'].drop('Rings').sort_values()
+    # # 相关性最负的特征
+    # neg_corr_feature = correlation_with_rings.idxmin()
+    # # 相关性最正的特征
+    # pos_corr_feature = correlation_with_rings.idxmax()
+    # 对 Rings 的相关性取绝对值，并进行排序，以确定绝对值最大和第二大的相关性
+    correlation_with_rings = corr_matrix['Rings'].drop('Rings').abs().sort_values(ascending=False)
+    # 绝对值相关性最大的两个特征
+    top_corr_features = correlation_with_rings.index[:2]
+
+    #return neg_corr_feature,pos_corr_feature
+    return top_corr_features[1], top_corr_features[0]
 
 def scatter_plot_with_ring(df):
 

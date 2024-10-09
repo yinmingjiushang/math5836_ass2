@@ -4,7 +4,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Input
 from tensorflow.keras.optimizers import SGD
 from sklearn.metrics import root_mean_squared_error, r2_score
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from sklearn.model_selection import train_test_split
 
 
@@ -15,14 +15,18 @@ def tensor_SGD_regression(df, split_size, num_experiments):
         x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=split_size, random_state=experiment)
 
         # 标准化自变量
-        scaler_x = StandardScaler()
-        x_train_scaled = scaler_x.fit_transform(x_train)
-        x_test_scaled = scaler_x.transform(x_test)
+        #scaler_x = MinMaxScaler()
+        #x_train_scaled = scaler_x.fit_transform(x_train)
+        #x_test_scaled = scaler_x.transform(x_test)
+        x_train_scaled = x_train
+        x_test_scaled = x_test
 
         # 标准化目标变量
-        scaler_y = StandardScaler()
-        y_train_scaled = scaler_y.fit_transform(y_train.values.reshape(-1, 1))
-        y_test_scaled = scaler_y.transform(y_test.values.reshape(-1, 1))
+        #scaler_y = MinMaxScaler()
+        #y_train_scaled = scaler_y.fit_transform(y_train.values.reshape(-1, 1))
+        #y_test_scaled = scaler_y.transform(y_test.values.reshape(-1, 1))
+        y_train_scaled = y_train
+        y_test_scaled = y_test
 
         def SGD_create_model(learning_rate, hidden_layers, neurons_per_layer):
             model = Sequential()
@@ -52,11 +56,13 @@ def tensor_SGD_regression(df, split_size, num_experiments):
 
         # 训练集预测
         y_train_pred_scaled = model.predict(x_train_scaled)
-        y_train_pred = scaler_y.inverse_transform(y_train_pred_scaled)
+        #y_train_pred = scaler_y.inverse_transform(y_train_pred_scaled)
+        y_train_pred = y_train_pred_scaled
 
         # 测试集预测
         y_test_pred_scaled = model.predict(x_test_scaled)
-        y_test_pred = scaler_y.inverse_transform(y_test_pred_scaled)
+        #y_test_pred = scaler_y.inverse_transform(y_test_pred_scaled)
+        y_test_pred = y_test_pred_scaled
 
         # 计算训练集 RMSE 和 R²
         train_rmse = root_mean_squared_error(y_train, y_train_pred)

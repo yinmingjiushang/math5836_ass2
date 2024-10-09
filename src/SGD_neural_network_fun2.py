@@ -4,7 +4,7 @@ import torch.optim as optim
 from sklearn.model_selection import train_test_split
 import numpy as np
 import pandas as pd
-
+from sklearn.preprocessing import MinMaxScaler
 
 def torch_SGD_regression(split_size, num_experiments):
     csv_file_path = "../data/abalone_data.csv"
@@ -19,6 +19,9 @@ def torch_SGD_regression(split_size, num_experiments):
 
     X.fillna(X.mean(), inplace=True)
     y.fillna(y.mean(), inplace=True)
+
+    # scaler = MinMaxScaler()
+    # X = scaler.fit_transform(X)
 
     X_tensor = torch.tensor(X.values, dtype=torch.float32)
     y_tensor = torch.tensor(y.values, dtype=torch.float32).view(-1, 1)

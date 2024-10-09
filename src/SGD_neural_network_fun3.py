@@ -4,6 +4,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.neural_network import MLPRegressor
 import random
+from sklearn.preprocessing import MinMaxScaler
 
 def sklearn_SGD_regression(split_size, num_experiments):
     column_names = ['Sex', 'Length', 'Diameter', 'Height', 'Whole_weight',
@@ -20,6 +21,12 @@ def sklearn_SGD_regression(split_size, num_experiments):
         X = abalone_data.drop('Rings', axis=1)
         y = abalone_data['Rings']
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=split_size, random_state=run_num)
+
+        # 规范化特征
+        # scaler = MinMaxScaler()
+        # X_train = scaler.fit_transform(X_train)
+        # X_test = scaler.transform(X_test)
+
         return X_train, X_test, y_train, y_test
 
     def scikit_nn_mod(x_train, x_test, y_train, y_test, hidden_layers=(30,), learning_rate=0.001):
