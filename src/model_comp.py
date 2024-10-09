@@ -383,6 +383,28 @@ def linear_vs_neural_comp():
     plt.savefig('../out/model_comp/linear_vs_neural_plot.png')
     plt.close()
 
+def neural_results_analysis():
+    # Load the CSV file
+    fun1_data = pd.read_csv('../results/fun1_experiment_results.csv')
+    fun2_data = pd.read_csv('../results/fun2_experiment_results.csv')
+    fun3_data = pd.read_csv('../results/fun3_experiment_results.csv')
+
+    # Calculate minimum, mean, and standard deviation for each dataset
+    fun1_summary = fun1_data.describe().loc[['min', 'mean', 'std']].drop(columns=['experiment_num'])
+    fun2_summary = fun2_data.describe().loc[['min', 'mean', 'std']].drop(columns=['experiment_num'])
+    fun3_summary = fun3_data.describe().loc[['min', 'mean', 'std']].drop(columns=['experiment_num'])
+
+    # Concatenate the summary statistics of all three datasets
+    summary_all = pd.concat([fun1_summary, fun2_summary, fun3_summary], keys=['fun1', 'fun2', 'fun3'])
+
+    # Write the concatenated summary statistics to a CSV file
+    output_path = '../results/neural_analysis_results.csv'
+    summary_all.to_csv(output_path)
+
+    # Informing user of the file location
+    output_path
+
+
 
 #linear_vs_neural()
 
@@ -394,3 +416,4 @@ logistic_auc_comp("../results/logistic_experiment_results.csv", "../out/model_co
 logistic_roc_comp("../results/logistic_experiment_results.csv", "../out/model_comp/")
 
 linear_vs_neural_comp()
+neural_results_analysis()
