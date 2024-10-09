@@ -334,10 +334,57 @@ def neural_comp(csv_path, name):
     plt.savefig(f"../out/model_comp/{name}.png")
     plt.close()
 
+def linear_vs_neural_comp():
+    # Load the CSV files
+    linear_results_path = '../results/linear_analysis_results.csv'
+    neural_results_path = '../results/neural_network_results.csv'
+
+    linear_df = pd.read_csv(linear_results_path)
+    neural_df = pd.read_csv(neural_results_path)
+
+    # Extracting mean values from linear regression dataset for comparison
+    linear_mean_train_rmse = linear_df['mean_train_rmse'].mean()
+    linear_mean_test_rmse = linear_df['mean_test_rmse'].mean()
+    linear_mean_train_r2 = linear_df['mean_train_r2'].mean()
+    linear_mean_test_r2 = linear_df['mean_test_r2'].mean()
+
+    # Using the original values of each experiment for neural network functions
+    neural_fun1_values = neural_df[neural_df['fun_name'] == 'fun1'][
+        ['train_rmse', 'test_rmse', 'train_r2', 'test_r2']].mean()
+    neural_fun2_values = neural_df[neural_df['fun_name'] == 'fun2'][
+        ['train_rmse', 'test_rmse', 'train_r2', 'test_r2']].mean()
+    neural_fun3_values = neural_df[neural_df['fun_name'] == 'fun3'][
+        ['train_rmse', 'test_rmse', 'train_r2', 'test_r2']].mean()
+
+    # Metrics for comparison
+    metrics = ['Train RMSE', 'Test RMSE', 'Train R^2', 'Test R^2']
+    linear_values = [linear_mean_train_rmse, linear_mean_test_rmse, linear_mean_train_r2, linear_mean_test_r2]
+
+    # Plotting comparison of Linear Regression and each Neural Network function without specifying colors
+    plt.figure(figsize=(12, 8))
+
+    width = 0.2
+    x = range(len(metrics))
+
+    # Plotting all functions for comparison using default colors
+    plt.bar([i - 1.5 * width for i in x], linear_values, width=width, label='Linear Regression')
+    plt.bar([i - 0.5 * width for i in x], neural_fun1_values, width=width, label='Neural Network - Fun1')
+    plt.bar([i + 0.5 * width for i in x], neural_fun2_values, width=width, label='Neural Network - Fun2')
+    plt.bar([i + 1.5 * width for i in x], neural_fun3_values, width=width, label='Neural Network - Fun3')
+
+    plt.xlabel('Metrics')
+    plt.ylabel('Values')
+    plt.title('Comparison of Linear Regression vs Neural Network Models (Fun1, Fun2, Fun3)')
+    plt.xticks(x, metrics)
+    plt.legend()
+    plt.grid(axis='y', linestyle='--', linewidth=0.7)
+
+    # Save the plot as a file
+    plt.savefig('../out/model_comp/linear_vs_neural_plot.png')
+    plt.close()
 
 
-
-linear_vs_neural()
+#linear_vs_neural()
 
 linear_comp2("../results/linear_experiment_results.csv", "linear_comp")
 neural_comp("../results/fun1_experiment_results.csv", "fun1")
@@ -345,3 +392,5 @@ neural_comp("../results/fun2_experiment_results.csv", "fun2")
 neural_comp("../results/fun3_experiment_results.csv", "fun3")
 logistic_auc_comp("../results/logistic_experiment_results.csv", "../out/model_comp")
 logistic_roc_comp("../results/logistic_experiment_results.csv", "../out/model_comp/")
+
+linear_vs_neural_comp()

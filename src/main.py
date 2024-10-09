@@ -439,13 +439,14 @@ def main():
     # create df
     neural_network_df = pd.DataFrame(columns=['fun_name', 'train_rmse', 'test_rmse', 'train_r2', 'test_r2'])
 
-    SGD_neural_network_fun1.tensor_SGD_regression(abalone, split_size, num_experiments)
+    fun1_avg_train_rmse, fun1_avg_test_rmse, fun1_avg_train_r2, fun1_avg_test_r2 = SGD_neural_network_fun1.tensor_SGD_regression(abalone, split_size, num_experiments)
+    neural_network_df.loc[len(neural_network_df)] = ["fun1", fun1_avg_train_rmse, fun1_avg_test_rmse, fun1_avg_train_r2, fun1_avg_test_r2]
 
-    fun2_best_train_rmse, fun2_best_test_rmse, fun2_best_train_r2, fun2_best_test_r2 = SGD_neural_network_fun2.torch_SGD_regression(split_size, num_experiments)
-    neural_network_df.loc[len(neural_network_df)] = ["fun2", fun2_best_train_rmse, fun2_best_test_rmse, fun2_best_train_r2, fun2_best_test_r2]
+    fun2_avg_train_rmse, fun2_avg_test_rmse, fun2_avg_train_r2, fun2_avg_test_r2 = SGD_neural_network_fun2.torch_SGD_regression(split_size, num_experiments)
+    neural_network_df.loc[len(neural_network_df)] = ["fun2", fun2_avg_train_rmse, fun2_avg_test_rmse, fun2_avg_train_r2, fun2_avg_test_r2]
 
-    fun3_best_train_rmse, fun3_best_test_rmse, fun3_best_train_r2, fun3_best_test_r2 = SGD_neural_network_fun3.sklearn_SGD_regression(split_size, num_experiments)
-    neural_network_df.loc[len(neural_network_df)] = ["fun3", fun3_best_train_rmse, fun3_best_test_rmse, fun3_best_train_r2, fun3_best_test_r2]
+    fun3_avg_train_rmse, fun3_avg_test_rmse, fun3_avg_train_r2, fun3_avg_test_r2 = SGD_neural_network_fun3.sklearn_SGD_regression(split_size, num_experiments)
+    neural_network_df.loc[len(neural_network_df)] = ["fun3", fun3_avg_train_rmse, fun3_avg_test_rmse, fun3_avg_train_r2, fun3_avg_test_r2]
 
     neural_network_df.to_csv("../results/neural_network_results.csv", index=False)
     # print(abalone)

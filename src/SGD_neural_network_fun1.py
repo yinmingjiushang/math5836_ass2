@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Input
 from tensorflow.keras.optimizers import SGD
@@ -151,7 +152,14 @@ def tensor_SGD_regression(df, split_size, num_experiments):
     experiment_results_df.to_csv("../results/fun1_experiment_results.csv", index=False)
 
     # 输出实验结果汇总
-    print(f"Average train_RMSE: {sum(train_rmse_list) / len(train_rmse_list)}")
-    print(f"Average test_RMSE: {sum(test_rmse_list) / len(test_rmse_list)}")
-    print(f"Average train_R²: {sum(train_r2_list) / len(train_r2_list)}")
-    print(f"Average test_R²: {sum(test_r2_list) / len(test_r2_list)}")
+    avg_train_rmse = np.mean(train_rmse_list)
+    avg_test_rmse = np.mean(test_rmse_list)
+    avg_train_r2 = np.mean(train_r2_list)
+    avg_test_r2 = np.mean(test_r2_list)
+
+    print(f"Average train_RMSE: {avg_train_rmse}")
+    print(f"Average test_RMSE: {avg_test_rmse}")
+    print(f"Average train_R²: {avg_train_r2}")
+    print(f"Average test_R²: {avg_test_r2}")
+
+    return avg_train_rmse, avg_test_rmse, avg_train_r2, avg_test_r2
