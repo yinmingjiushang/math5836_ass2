@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import os
 import seaborn as sns
+import ast
+import re
 
 def mkdir(path):
     folder = os.path.exists(path)
@@ -214,6 +216,60 @@ def linear_comp2(csv_path,name):
     plt.close()
 
 
+def logistic_comp(csv_path, output_dir):
+    # Load the dataset
+    experiment_results = pd.read_csv(csv_path)
+
+    # Function to clean and parse the list strings
+    def clean_and_parse_list(list_str):
+        # Removing extra whitespace and replacing it with commas where appropriate
+        cleaned_str = re.sub(r'\s+', ',', list_str.strip())
+        # Removing any consecutive commas introduced
+        cleaned_str = re.sub(r',+', ',', cleaned_str)
+        # Ensuring the string starts and ends correctly as a list
+        cleaned_str = cleaned_str.replace('[,', '[').replace(',]', ']')
+        # Convert to list using ast.literal_eval
+        return ast.literal_eval(cleaned_str)
+
+    # Iterate through each experiment number and plot the ROC curves
+    unique_experiments = experiment_results['experiment_num'].unique()
+
+    # Create output directory if it doesn't exist
+    os.makedirs(output_dir, exist_ok=True)
+
+    for experiment in unique_experiments:
+        experiment_data = experiment_results.loc[experiment_results['experiment_num'] == experiment].copy()
+
+        # Applying the new parsing function to fix the columns
+        experiment_data['fpr'] = experiment_data['fpr'].apply(clean_and_parse_list)
+        experiment_data['tpr'] = experiment_data['tpr'].apply(clean_and_parse_list)
+
+        # Plotting the ROC curve for each experiment
+        plt.figure(figsize=(10, 8))
+
+        for _, row in experiment_data.iterrows():
+            fpr = row['fpr']
+            tpr = row['tpr']
+            auc_score = row['auc_score']
+            label = f"Feature: {row['feature_type']}, Norm: {row['norm_flag']} - AUC = {auc_score:.2f}"
+            plt.plot(fpr, tpr, label=label, linestyle='-', alpha=0.7)
+
+        # Plot settings
+        plt.plot([0, 1], [0, 1], linestyle='--', color='grey')
+        plt.xlabel('False Positive Rate')
+        plt.ylabel('True Positive Rate')
+        plt.title(f'ROC Curve for Experiment {experiment}')
+        plt.legend(loc="lower right")
+        plt.tight_layout()
+        plt.grid(True)
+
+        # Save the plot as PNG
+        plt.savefig(os.path.join(output_dir, f'roc_curve_experiment_{experiment}.png'))
+        plt.close()
+        print(
+            f"ROC curve for experiment {experiment} saved to {os.path.join(output_dir, f'roc_curve_experiment_{experiment}.png')}")
+
+
 def neural_comp(csv_path, name):
     data = pd.read_csv(csv_path)
 
@@ -247,9 +303,14 @@ def neural_comp(csv_path, name):
     plt.close()
 
 
+
+
 linear_vs_neural()
 # linear_comp(30)
-linear_comp2("../results/linear_experiment_results.csv", "linear_comp")
-neural_comp("../results/fun1_experiment_results.csv", "fun1")
-neural_comp("../results/fun2_experiment_results.csv", "fun2")
-neural_comp("../results/fun3_experiment_results.csv", "fun3")
+
+
+# linear_comp2("../results/linear_experiment_results.csv", "linear_comp")
+# neural_comp("../results/fun1_experiment_results.csv", "fun1")
+# neural_comp("../results/fun2_experiment_results.csv", "fun2")
+# neural_comp("../results/fun3_experiment_results.csv", "fun3")
+logistic_comp("../results/logistic_experiment_results.csv", "../out/model_comp/")

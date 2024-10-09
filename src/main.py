@@ -55,6 +55,9 @@ if ed_state == 0:
 results_df = pd.DataFrame(columns=['experiment_num', 'feature_type', 'norm_flag',
                                    'train_rmse', 'test_rmse', 'train_r2', 'test_r2'])
 
+results_logistic_df = pd.DataFrame(columns=['experiment_num', 'feature_type', 'norm_flag',
+                                   'auc_score', 'fpr', 'tpr'])
+
 
 
 # 设置显示的最大列数为 None（显示所有列）
@@ -263,45 +266,47 @@ def single_logistic_regression(number, flag_name, x_train, y_train, x_test, y_te
     plt.savefig(file_name)
     plt.close()
 
+    # Return AUC score and ROC data
+    return auc_score, fpr, tpr
 
-def compare_logistic_regression(number, flag_name, x_train, y_train, x_test, y_test, threshold, file_name):
-    # 将目标变量二值化
-    y_train_bin = (y_train > threshold).astype(int)
-    y_test_bin = (y_test > threshold).astype(int)
-
-    # 模型 1：未标准化的数据
-    logistic_model_1 = LogisticRegression()
-    logistic_model_1.fit(x_train, y_train_bin)
-    y_pred_prob_1 = logistic_model_1.predict_proba(x_test)[:, 1]
-    auc_score_1 = roc_auc_score(y_test_bin, y_pred_prob_1)
-    fpr_1, tpr_1, _ = roc_curve(y_test_bin, y_pred_prob_1)
-
-    # 模型 2：标准化的数据
-    scaler = MinMaxScaler()
-    x_train_scaled = scaler.fit_transform(x_train)
-    x_test_scaled = scaler.transform(x_test)
-    logistic_model_2 = LogisticRegression()
-    logistic_model_2.fit(x_train_scaled, y_train_bin)
-    y_pred_prob_2 = logistic_model_2.predict_proba(x_test_scaled)[:, 1]
-    auc_score_2 = roc_auc_score(y_test_bin, y_pred_prob_2)
-    fpr_2, tpr_2, _ = roc_curve(y_test_bin, y_pred_prob_2)
-
-    # 打印 AUC 分数
-    print(f'AUC Score (Unnormalized): {auc_score_1}')
-    print(f'AUC Score (Normalized): {auc_score_2}')
-
-    # 绘制 ROC 曲线比较
-    plt.figure(figsize=(8, 6))
-    plt.plot(fpr_1, tpr_1, label=f'ROC (Unnormalized) - AUC = {auc_score_1:.2f}')
-    plt.plot(fpr_2, tpr_2, label=f'ROC (Normalized) - AUC = {auc_score_2:.2f}')
-    plt.plot([0, 1], [0, 1], linestyle='--', color='grey')
-    plt.xlabel('False Positive Rate')
-    plt.ylabel('True Positive Rate')
-    plt.title(f'ROC Curve Comparison\n{flag_name}_exp{number}')
-    plt.legend(loc="lower right")
-    # store to local
-    plt.savefig(file_name)
-    plt.close()
+# def compare_logistic_regression(number, flag_name, x_train, y_train, x_test, y_test, threshold, file_name):
+#     # 将目标变量二值化
+#     y_train_bin = (y_train > threshold).astype(int)
+#     y_test_bin = (y_test > threshold).astype(int)
+#
+#     # 模型 1：未标准化的数据
+#     logistic_model_1 = LogisticRegression()
+#     logistic_model_1.fit(x_train, y_train_bin)
+#     y_pred_prob_1 = logistic_model_1.predict_proba(x_test)[:, 1]
+#     auc_score_1 = roc_auc_score(y_test_bin, y_pred_prob_1)
+#     fpr_1, tpr_1, _ = roc_curve(y_test_bin, y_pred_prob_1)
+#
+#     # 模型 2：标准化的数据
+#     scaler = MinMaxScaler()
+#     x_train_scaled = scaler.fit_transform(x_train)
+#     x_test_scaled = scaler.transform(x_test)
+#     logistic_model_2 = LogisticRegression()
+#     logistic_model_2.fit(x_train_scaled, y_train_bin)
+#     y_pred_prob_2 = logistic_model_2.predict_proba(x_test_scaled)[:, 1]
+#     auc_score_2 = roc_auc_score(y_test_bin, y_pred_prob_2)
+#     fpr_2, tpr_2, _ = roc_curve(y_test_bin, y_pred_prob_2)
+#
+#     # 打印 AUC 分数
+#     print(f'AUC Score (Unnormalized): {auc_score_1}')
+#     print(f'AUC Score (Normalized): {auc_score_2}')
+#
+#     # 绘制 ROC 曲线比较
+#     plt.figure(figsize=(8, 6))
+#     plt.plot(fpr_1, tpr_1, label=f'ROC (Unnormalized) - AUC = {auc_score_1:.2f}')
+#     plt.plot(fpr_2, tpr_2, label=f'ROC (Normalized) - AUC = {auc_score_2:.2f}')
+#     plt.plot([0, 1], [0, 1], linestyle='--', color='grey')
+#     plt.xlabel('False Positive Rate')
+#     plt.ylabel('True Positive Rate')
+#     plt.title(f'ROC Curve Comparison\n{flag_name}_exp{number}')
+#     plt.legend(loc="lower right")
+#     # store to local
+#     plt.savefig(file_name)
+#     plt.close()
 
 def results_analysis(results_df):
     # 使用 groupby 和 agg 来计算同一 feature_type 和 norm_flag 下的最小值、平均值和标准差
@@ -377,7 +382,8 @@ def main():
         results_df.loc[len(results_df)] = [number, feature_type, norm_flag, train_rmse, test_rmse, train_r2, test_r2]
         # logistic regression
         file_name = generate_output_path(q21_logistic_out_path,number, norm_flag, feature_type, "logistic")
-        single_logistic_regression(number, flag_name, x_train, y_train, x_test, y_test, threshold, file_name)
+        auc_score, fpr, tpr = single_logistic_regression(number, flag_name, x_train, y_train, x_test, y_test, threshold, file_name)
+        results_logistic_df.loc[len(results_logistic_df)] = [number, feature_type, norm_flag,auc_score, fpr, tpr]
         print("----------------------------------------------")
 
         # q2.2: normalising input data
@@ -390,7 +396,8 @@ def main():
         results_df.loc[len(results_df)] = [number, feature_type, norm_flag, train_rmse, test_rmse, train_r2, test_r2]
         # logistic regression
         file_name = generate_output_path(q22_logistic_out_path, number, norm_flag, feature_type, "logistic")
-        single_logistic_regression(number, flag_name, x_train, y_train, x_test, y_test, threshold, file_name)
+        auc_score, fpr, tpr = single_logistic_regression(number, flag_name, x_train, y_train, x_test, y_test, threshold, file_name)
+        results_logistic_df.loc[len(results_logistic_df)] = [number, feature_type, norm_flag, auc_score, fpr, tpr]
         print("----------------------------------------------")
 
         # q2.3: two selected input features
@@ -406,7 +413,8 @@ def main():
         results_df.loc[len(results_df)] = [number, feature_type, norm_flag, train_rmse, test_rmse, train_r2, test_r2]
         # logistic regression
         file_name = generate_output_path(q23_logistic_unnorm_out_path, number, norm_flag, feature_type, "logistic")
-        single_logistic_regression(number, flag_name, x_train, y_train, x_test, y_test, threshold, file_name)
+        auc_score, fpr, tpr = single_logistic_regression(number, flag_name, x_train, y_train, x_test, y_test, threshold, file_name)
+        results_logistic_df.loc[len(results_logistic_df)] = [number, feature_type, norm_flag, auc_score, fpr, tpr]
 
         # norm
         norm_flag = 1
@@ -416,19 +424,16 @@ def main():
         results_df.loc[len(results_df)] = [number, feature_type, norm_flag, train_rmse, test_rmse, train_r2, test_r2]
         # linear regression
         file_name = generate_output_path(q23_logistic_norm_out_path, number, norm_flag, feature_type, "logistic")
-        single_logistic_regression(number, flag_name, x_train, y_train, x_test, y_test, threshold, file_name)
+        auc_score, fpr, tpr = single_logistic_regression(number, flag_name, x_train, y_train, x_test, y_test, threshold, file_name)
+        results_logistic_df.loc[len(results_logistic_df)] = [number, feature_type, norm_flag, auc_score, fpr, tpr]
 
-        # compare unnorm vs norm
-        norm_flag = 0
-        flag_name, x_train, y_train, x_test, y_test = transform_input_data(abalone, number, norm_flag, split_size, feature_type, type_option)
-        file_name = generate_output_path(sel_features_compare_out_path, number, norm_flag, feature_type, "logistic")
-        compare_logistic_regression(number, flag_name, x_train, y_train, x_test, y_test, threshold, file_name)
         print("===============================================")
 
         plt.close()
 
     # 保存结果
     results_df.to_csv("../results/linear_experiment_results.csv", index=False)
+    results_logistic_df.to_csv("../results/logistic_experiment_results.csv", index=False)
 
     # q2.4:
     # create df
