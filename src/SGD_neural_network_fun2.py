@@ -92,9 +92,14 @@ def torch_SGD_regression(split_size, num_experiments):
 
         return best_loss, train_rmse, test_rmse, train_r2, test_r2
 
-    learning_rates = [0.01, 0.001, 0.0001]
-    num_layers_list = [1, 2, 3]
-    hidden_sizes = [32, 64, 128]
+    # learning_rates = [0.01, 0.001, 0.0001]
+    # num_layers_list = [1, 2, 3]
+    # hidden_sizes = [32, 64, 128]
+
+    # after try
+    learning_rates = [0.01]
+    num_layers_list = [1]
+    hidden_sizes = [128]
 
     epochs = 1000
     patience = 10
@@ -150,7 +155,7 @@ def torch_SGD_regression(split_size, num_experiments):
     # 30次实验结果
     experiment_results = []
     for experiment in range(num_experiments):
-        print(f"Experiment {experiment}/{num_experiments}")
+        print(f"Experiment {experiment+1}/{num_experiments}")
         # 在每次实验中动态设置 random_state 为 experiment + 1
         X_train, X_test, y_train, y_test = train_test_split(X_tensor, y_tensor, test_size=split_size,
                                                             random_state=experiment)

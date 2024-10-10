@@ -17,6 +17,7 @@ import SGD_neural_network_fun1,SGD_neural_network_fun2,SGD_neural_network_fun3
 # ============================
 # local = 0 or ed = 1
 ed_state = 0
+num_experiments = 30
 # ============================
 
 if ed_state == 0:
@@ -27,12 +28,11 @@ q21_linear_out_path = "../out/linear_all_unnorm"
 q21_logistic_out_path = "../out/logistic_all_unnorm"
 q22_linear_out_path = "../out/linear_all_norm"
 q22_logistic_out_path = "../out/logistic_all_norm"
-all_features_compare_out_path = "../out/logistic_all_compare"
 q23_linear_unnorm_out_path = "../out/linear_sel_unnorm"
 q23_logistic_unnorm_out_path = "../out/logistic_sel_unnorm"
 q23_linear_norm_out_path = "../out/linear_sel_norm"
 q23_logistic_norm_out_path = "../out/logistic_sel_norm"
-sel_features_compare_out_path = "../out/logistic_sel_compare"
+
 
 if ed_state == 0:
     if os.path.exists("../out"):
@@ -44,12 +44,10 @@ if ed_state == 0:
     achieve_data.mkdir(q21_logistic_out_path)
     achieve_data.mkdir(q22_linear_out_path)
     achieve_data.mkdir(q22_logistic_out_path)
-    achieve_data.mkdir(all_features_compare_out_path)
     achieve_data.mkdir(q23_linear_unnorm_out_path)
     achieve_data.mkdir(q23_logistic_unnorm_out_path)
     achieve_data.mkdir(q23_linear_norm_out_path)
     achieve_data.mkdir(q23_logistic_norm_out_path)
-    achieve_data.mkdir(sel_features_compare_out_path)
 
 # results_df
 results_df = pd.DataFrame(columns=['experiment_num', 'feature_type', 'norm_flag',
@@ -275,44 +273,6 @@ def single_logistic_regression(number, flag_name, x_train, y_train, x_test, y_te
     # Return AUC score and ROC data
     return auc_score, fpr, tpr
 
-# def compare_logistic_regression(number, flag_name, x_train, y_train, x_test, y_test, threshold, file_name):
-#     # 将目标变量二值化
-#     y_train_bin = (y_train > threshold).astype(int)
-#     y_test_bin = (y_test > threshold).astype(int)
-#
-#     # 模型 1：未标准化的数据
-#     logistic_model_1 = LogisticRegression()
-#     logistic_model_1.fit(x_train, y_train_bin)
-#     y_pred_prob_1 = logistic_model_1.predict_proba(x_test)[:, 1]
-#     auc_score_1 = roc_auc_score(y_test_bin, y_pred_prob_1)
-#     fpr_1, tpr_1, _ = roc_curve(y_test_bin, y_pred_prob_1)
-#
-#     # 模型 2：标准化的数据
-#     scaler = MinMaxScaler()
-#     x_train_scaled = scaler.fit_transform(x_train)
-#     x_test_scaled = scaler.transform(x_test)
-#     logistic_model_2 = LogisticRegression()
-#     logistic_model_2.fit(x_train_scaled, y_train_bin)
-#     y_pred_prob_2 = logistic_model_2.predict_proba(x_test_scaled)[:, 1]
-#     auc_score_2 = roc_auc_score(y_test_bin, y_pred_prob_2)
-#     fpr_2, tpr_2, _ = roc_curve(y_test_bin, y_pred_prob_2)
-#
-#     # 打印 AUC 分数
-#     print(f'AUC Score (Unnormalized): {auc_score_1}')
-#     print(f'AUC Score (Normalized): {auc_score_2}')
-#
-#     # 绘制 ROC 曲线比较
-#     plt.figure(figsize=(8, 6))
-#     plt.plot(fpr_1, tpr_1, label=f'ROC (Unnormalized) - AUC = {auc_score_1:.2f}')
-#     plt.plot(fpr_2, tpr_2, label=f'ROC (Normalized) - AUC = {auc_score_2:.2f}')
-#     plt.plot([0, 1], [0, 1], linestyle='--', color='grey')
-#     plt.xlabel('False Positive Rate')
-#     plt.ylabel('True Positive Rate')
-#     plt.title(f'ROC Curve Comparison\n{flag_name}_exp{number}')
-#     plt.legend(loc="lower right")
-#     # store to local
-#     plt.savefig(file_name)
-#     plt.close()
 
 def results_analysis(results_df):
     # 使用 groupby 和 agg 来计算同一 feature_type 和 norm_flag 下的最小值、平均值和标准差
@@ -338,7 +298,8 @@ def results_analysis(results_df):
 
 def main():
     # 执行加载或更新data
-    achieve_data.achieve_data_main()
+    if ed_state == 0:
+        achieve_data.achieve_data_main()
 
     # 从csv读取数据
     csv_file_path = "../data/abalone_data.csv"
@@ -366,7 +327,7 @@ def main():
     feature_type = 'all'
     type_option = None
     file_name = None
-    num_experiments = 30
+
     split_size = 0.4
     threshold = 7
     norm_flag = 0
@@ -441,7 +402,7 @@ def main():
     results_df.to_csv("../results/linear_experiment_results.csv", index=False)
     results_logistic_df.to_csv("../results/logistic_experiment_results.csv", index=False)
 
-    # q2.4:
+    # q2.4: neural network
     # create df
     neural_network_df = pd.DataFrame(columns=['fun_name', 'train_rmse', 'test_rmse', 'train_r2', 'test_r2'])
 

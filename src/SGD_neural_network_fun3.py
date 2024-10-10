@@ -88,10 +88,10 @@ def sklearn_SGD_regression(split_size, num_experiments):
         return best_train_rmse, best_test_rmse, best_train_r2, best_test_r2, best_params
 
     # 超参数搜索阶段
-    best_train_rmse, best_test_rmse, best_train_r2, best_test_r2, best_params = select_best_parameters()
+    # best_train_rmse, best_test_rmse, best_train_r2, best_test_r2, best_params = select_best_parameters()
 
-    print(f'\nBest Parameters: {best_params}, Best Train RMSE: {best_train_rmse:.4f}, Best Test RMSE: {best_test_rmse:.4f}')
-    print(f'Best Train R²: {best_train_r2:.4f}, Best Test R²: {best_test_r2:.4f}')
+    # print(f'\nBest Parameters: {best_params}, Best Train RMSE: {best_train_rmse:.4f}, Best Test RMSE: {best_test_rmse:.4f}')
+    # print(f'Best Train R²: {best_train_r2:.4f}, Best Test R²: {best_test_r2:.4f}')
 
     # 30次实验阶段
     experiment_results = []
@@ -99,7 +99,10 @@ def sklearn_SGD_regression(split_size, num_experiments):
         print(f"\nRunning experiment {experiment + 1}/{num_experiments}")
         X_train, X_test, y_train, y_test = split_data(split_size, experiment)  # 使用实验编号作为 random_state
 
-        train_rmse, test_rmse, train_r2, test_r2 = scikit_nn_mod(X_train, X_test, y_train, y_test, best_params[0], best_params[1])
+        # train_rmse, test_rmse, train_r2, test_r2 = scikit_nn_mod(X_train, X_test, y_train, y_test, best_params[0], best_params[1])
+        # after try
+        train_rmse, test_rmse, train_r2, test_r2 = scikit_nn_mod(X_train, X_test, y_train, y_test, (10,5),
+                                                                 0.001)
 
         experiment_results.append({
             'experiment_num': experiment,

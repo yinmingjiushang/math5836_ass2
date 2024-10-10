@@ -122,7 +122,7 @@ def tensor_SGD_regression(df, split_size, num_experiments):
 
 
     # 进行初始化参数搜索
-    best_params = find_best_hyperparameters(df, split_size=split_size)
+    #best_params = find_best_hyperparameters(df, split_size=split_size)
 
     # 根据找到的最优参数，进行30次实验并保存到CSV文件
     train_rmse_list = []
@@ -133,12 +133,14 @@ def tensor_SGD_regression(df, split_size, num_experiments):
 
     for experiment in range(num_experiments):
         print(f"Experiment {experiment + 1}/{num_experiments}")
-        train_rmse, test_rmse, train_r2, test_r2 = tensor_SGD_reg(df, split_size, experiment,
-                                                                  learning_rate=best_params['learning_rate'],
-                                                                  hidden_layers=best_params['hidden_layers'],
-                                                                  neurons_per_layer=best_params['neurons_per_layer'])
+        # train_rmse, test_rmse, train_r2, test_r2 = tensor_SGD_reg(df, split_size, experiment,
+        #                                                           learning_rate=best_params['learning_rate'],
+        #                                                           hidden_layers=best_params['hidden_layers'],
+        #                                                           neurons_per_layer=best_params['neurons_per_layer'])
+        # after try best learning_rate=0.01  hidden_layers=2  neurons_per_layer=128
+        train_rmse, test_rmse, train_r2, test_r2 = tensor_SGD_reg(df, split_size, experiment, learning_rate = 0.01, hidden_layers = 2, neurons_per_layer = 128)
 
-        # 记录每次实验的结果
+    # 记录每次实验的结果
         train_rmse_list.append(train_rmse)
         test_rmse_list.append(test_rmse)
         train_r2_list.append(train_r2)

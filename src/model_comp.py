@@ -21,6 +21,25 @@ def mkdir(path):
 file = "../out/model_comp"
 mkdir(file)
 
+def find_best_param():
+    # Load the CSV file to analyze
+    file_path = '../results/fun1_param_results.csv'
+    data = pd.read_csv(file_path)
+    # Find the row with the minimum value of "test_rmse"
+    min_rmse_row = data.loc[data['test_rmse'].idxmin()]
+    print(min_rmse_row)
+
+    file_path = '../results/fun2_param_results.csv'
+    data = pd.read_csv(file_path)
+    # Find the row with the minimum value of "test_rmse"
+    min_rmse_row = data.loc[data['test_rmse'].idxmin()]
+    print(min_rmse_row)
+
+    file_path = '../results/fun3_param_results.csv'
+    data = pd.read_csv(file_path)
+    # Find the row with the minimum value of "test_rmse"
+    min_rmse_row = data.loc[data['test_rmse'].idxmin()]
+    print(min_rmse_row)
 
 
 def linear_vs_neural():
@@ -302,6 +321,25 @@ def logistic_roc_comp(csv_path, output_dir):
             f"ROC curve for experiment {experiment} saved to {os.path.join(output_dir, f'roc_curve_experiment_{experiment}.png')}")
 
 
+def logistic_auc_analysis(input_csv_path, output_folder_path):
+    # Load the CSV file into a DataFrame
+    df = pd.read_csv(input_csv_path)
+
+    # Extract AUC metrics grouped by features and normalization techniques
+    group_by_cols = ['feature_type', 'norm_flag']
+    auc_stats = df.groupby(group_by_cols)['auc_score'].agg(['min', 'mean', 'std']).reset_index()
+
+    # Create output folder if it doesn't exist
+    # os.makedirs(output_folder_path, exist_ok=True)
+
+    # Save the summary DataFrame to a CSV file
+    output_csv_path = os.path.join(output_folder_path, 'logistic_auc_analysis.csv')
+    auc_stats.to_csv(output_csv_path, index=False)
+
+    # Print confirmation
+    print(f'Successfully saved AUC summary to {output_csv_path}')
+
+
 def neural_comp(csv_path, name):
     data = pd.read_csv(csv_path)
 
@@ -407,13 +445,13 @@ def neural_results_analysis():
 
 
 #linear_vs_neural()
-
+#find_best_param()
 linear_comp2("../results/linear_experiment_results.csv", "linear_comp")
 neural_comp("../results/fun1_experiment_results.csv", "fun1")
 neural_comp("../results/fun2_experiment_results.csv", "fun2")
 neural_comp("../results/fun3_experiment_results.csv", "fun3")
 logistic_auc_comp("../results/logistic_experiment_results.csv", "../out/model_comp")
 logistic_roc_comp("../results/logistic_experiment_results.csv", "../out/model_comp/")
-
+logistic_auc_analysis("../results/logistic_experiment_results.csv","../results")
 linear_vs_neural_comp()
 neural_results_analysis()
