@@ -62,4 +62,3 @@ python3 model_comp.py (可能合并进main)
 │   └── set_up.py                     # File describing the project directory structure
 └── tree.txt
 
-17 directories, 28 files
