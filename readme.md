@@ -1,12 +1,12 @@
 # 2024_MATH5836 assignment2
-group work
-by anqichen, hutton, mingyin
+group work  
+by anqichen, hutton, mingyin  
 
 ## run
-cd ../src
-python3 set_up.py
-python3 main.py
-python3 model_comp.py (可能合并进main)
+cd ../src  
+python3 set_up.py  
+python3 main.py  
+python3 model_comp.py (可能合并进main)  
 
 ## project structure
 ```bash
