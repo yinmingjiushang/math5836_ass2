@@ -3,10 +3,7 @@ group1 work
 by anqichen, hutton, mingyin  
 
 ## run
-cd ../src  
-python3 set_up.py  
-python3 main.py  
-python3 model_comp.py (可能合并进main)  
+sh ./run.sh
 
 ## project structure
 ```bash
