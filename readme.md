@@ -1,5 +1,5 @@
 # 2024_MATH5836 assignment2
-group work  
+group1 work  
 by anqichen, hutton, mingyin  
 
 ## run
@@ -13,7 +13,7 @@ python3 model_comp.py (可能合并进main)
 ├── data
 │   ├── abalone_data.csv      # dataset(original)
 │   └── abalone_hash.txt      # Hash verification file for ensuring data integrity
-├── original_nowork
+├── original_nowork                                                                                             
 │   ├── anqi_code.ipynb       # original code from group member
 │   ├── hutton_code.py        # original code from group member
 │   ├── test1.py              # test

@@ -1,0 +1,3 @@
+This study compares traditional machine learning models (linear and logistic regression) with deep learning models (MLPs) for predicting abalone age. Using the abalone dataset, we evaluated model performance on regression and classification tasks, focusing on predictive accuracy, overfitting, and the impact of data normalization. Results indicate that while MLPs outperform traditional models in terms of accuracy, they require careful hyperparameter tuning and regularization to prevent overfitting and ensure robustness. This study highlights the trade-offs between model complexity, accuracy, and interpretability in biological data modeling, aiming to determine whether the added complexity of deep learning provides significant improvements over simpler models.
+
+
